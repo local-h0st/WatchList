@@ -24,7 +24,9 @@ footer {
     padding: 10px;
 }
 
-
+.avatar {
+    width:40px;
+}
 
 
 /* 电影列表 */

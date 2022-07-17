@@ -22,6 +22,7 @@ db = SQLAlchemy(mainApp)
 
 # 路由
 @mainApp.route('/')
+# @mainApp.route('/index')  失败，不能定义多个路由吗
 def hello():
     user_me = User.query.first()
     my_movies = Movie.query.all()
@@ -36,6 +37,12 @@ def index(username):
 @mainApp.route('/me')
 def me():
     return '<h>a developer named localh0st</h>'
+
+
+# @mainApp.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('404.html', user=User.query.first()), 404
+# 貌似是404.html的url_for有问题？
 
 
 # 数据库 设置表 ORM技术
@@ -70,13 +77,13 @@ if __name__ == '__main__':
 
     # 创建表和数据库文件, 如果改动了模型类，想重新生成表模式，那么需要先使用 db.drop_all() 删除表，然后重新创建：
     db.drop_all()  # db.drop_all() 会一并删除所有数据
-    db.create_all()     # 新建空数据库和表
+    db.create_all()  # 新建空数据库和表
     # 添加数据
     print('Adding records...')
-    db.session.add(User(name=my_name))    # db.session.add() 调用是将改动添加进数据库会话（一个临时区域）中。
+    db.session.add(User(name=my_name))  # db.session.add() 调用是将改动添加进数据库会话（一个临时区域）中。
     for record in watch_list:
         db.session.add(Movie(title=record['title'], year=record['year']))
-    db.session.commit()     # commit() 很重要，只有调用了这一行才会真正把记录提交进数据库
+    db.session.commit()  # commit() 很重要，只有调用了这一行才会真正把记录提交进数据库
     print('Done.')
 
     # print(User.query.all()[0].name)
