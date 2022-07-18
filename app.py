@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, redirect, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
 
 # 初始化
@@ -10,6 +10,7 @@ mainApp.config.update(
     DEBUG=True,
     ENV='development'
 )
+mainApp.config['SECRET_KEY'] = 'localh0st'  # 等同于 mainApp.secret_key = 'localh0st' 设置密钥
 WIN = sys.platform.startswith('win')
 if WIN:
     prefix = 'sqlite:///'
@@ -21,21 +22,58 @@ db = SQLAlchemy(mainApp)
 
 
 # 路由
-@mainApp.route('/')
+@mainApp.route('/', methods=['GET', 'POST'])
 # @mainApp.route('/index')  失败，不能定义多个路由吗
-def hello():
-    # return render_template('origin_index.html', user=User.query.first(), movies=Movie.query.all())
-    return render_template('index.html', movies=Movie.query.all())
+def index():
+    if request.method == 'POST':
+        title = request.form.get('title')  # 传入表单对应输入字段的 name 值
+        year = request.form.get('year')
+        if not title or not year or len(year) != 4 or len(title) > 60:
+            flash('Invalid input.')  # flash() 函数在内部会把消息存储到 Flask 提供的 session 对象里。session 用来在请求间存储数据
+            return redirect('/')  # 重定向
+        db.session.add(Movie(title=title, year=year))
+        db.session.commit()
+        flash('Item created.')
+        return redirect('/')
+    else:  # GET
+        # return render_template('origin_index.html', user=User.query.first(), movies=Movie.query.all())
+        return render_template('index.html', movies=Movie.query.all(), message=get_flashed_messages())
 
 
 @mainApp.route('/<username>')
-def index(username):
+def hello(username):
     return 'hello visitor ' + username
 
 
 @mainApp.route('/me')
 def me():
     return render_template("about_me.html")
+
+
+@mainApp.route('/movie/edit/<int:movie_id>', methods=['GET', 'POST'])
+def edit(movie_id):
+    if request.method == 'POST':
+        title = request.form['title']
+        year = request.form['year']
+        if not title or not year or len(year) != 4 or len(title) > 60:
+            flash('Invalid input.')
+            return redirect(url_for('edit', movie_id=movie_id))  # url_for('edit', movie_id=2) 会生成 /movie/edit/2
+        movie = Movie.query.get_or_404(movie_id)    # movie_id是主键
+        movie.title = title
+        movie.year = year
+        db.session.commit()
+        flash('Item updated.')
+        return redirect('/')
+    else:
+        return render_template('edit.html', movie=Movie.query.get_or_404(movie_id))
+
+
+@mainApp.route('/movie/delete/<int:movie_id>', methods=['POST'])
+def delete(movie_id):
+    db.session.delete(Movie.query.get_or_404(movie_id))
+    db.session.commit()
+    flash('Item Deleted.')
+    return redirect('/')
 
 
 @mainApp.errorhandler(404)
@@ -46,7 +84,7 @@ def page_not_found(e):
 
 @mainApp.context_processor  # 以后模板上下文有user了，render_template()可以不传入而直接使用了
 def inject_user_data():
-    return dict(user=User.query.first())      # 需要返回字典，等同于 return {'user': user}
+    return dict(user=User.query.first())  # 需要返回字典，等同于 return {'user': user}
 
 
 # 数据库 设置表 ORM技术

@@ -20,6 +20,13 @@
     </div>
 </head>
 <body>
+
+    <div data-gb-custom-block data-tag="for">
+        {% if message %}    {# message非空 #}
+	    <div class="alert">{{ message }}</div>
+        {% endif %}
+    </div>
+
     <h1 id="top-head">
         <img src="{{ url_for('static', filename='images/tom.jpg') }}" alt="Avatar" width="80" height="80">
         {{ user.name }}'s Watchlist
@@ -36,6 +43,10 @@
     <div data-gb-custom-block data-tag="block">
 
     </div>
+    {% endblock %}
+
+
+    {% block table %}
     {% endblock %}
 
     <footer>
