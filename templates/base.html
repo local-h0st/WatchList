@@ -1,0 +1,45 @@
+<!--
+基模板，用于继承
+因为基模板会被所有其他页面模板继承
+如果你在基模板中使用了某个变量
+那么这个变量也需要使用模板上下文处理函数注入到模板里
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- div是html里面的块标签，和jinja2里面的block有些许含义上的不同 -->
+    <div data-gb-custom-block data-tag="block">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--
+        新的 <meta> 元素会设置页面的视口，让页面根据设备的宽度来自动缩放页面，这样会让移动设备拥有更好的浏览体验
+        -->
+        <meta charset="utf-8">
+        <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
+        <title>{{ user.name }}'s Watchlist</title>
+    </div>
+</head>
+<body>
+    <h1 id="top-head">
+        <img src="{{ url_for('static', filename='images/tom.jpg') }}" alt="Avatar" width="80" height="80">
+        {{ user.name }}'s Watchlist
+    </h1>
+    <nav>
+        <ul>
+            <!-- 新增导航栏 -->
+            <li><a href="/">Home</a></li>
+            <li><a href="/me">Me</a></li>
+        </ul>
+    </nav>
+
+    {% block content %} {# 模板继承时用的block块 #}
+    <div data-gb-custom-block data-tag="block">
+
+    </div>
+    {% endblock %}
+
+    <footer>
+        <small>&copy; 2018 <a href="http://helloflask.com/book/3">HelloFlask</a></small>
+	</footer>
+</body>
+</html>

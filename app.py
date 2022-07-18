@@ -24,9 +24,8 @@ db = SQLAlchemy(mainApp)
 @mainApp.route('/')
 # @mainApp.route('/index')  失败，不能定义多个路由吗
 def hello():
-    user_me = User.query.first()
-    my_movies = Movie.query.all()
-    return render_template('index.html', user=user_me, movies=my_movies)
+    # return render_template('origin_index.html', user=User.query.first(), movies=Movie.query.all())
+    return render_template('index.html', movies=Movie.query.all())
 
 
 @mainApp.route('/<username>')
@@ -36,13 +35,18 @@ def index(username):
 
 @mainApp.route('/me')
 def me():
-    return '<h>a developer named localh0st</h>'
+    return render_template("about_me.html")
 
 
-# @mainApp.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('404.html', user=User.query.first()), 404
-# 貌似是404.html的url_for有问题？
+@mainApp.errorhandler(404)
+def page_not_found(e):
+    # return render_template('origin_404.html', user=User.query.first()), 404
+    return render_template('404.html'), 404
+
+
+@mainApp.context_processor  # 以后模板上下文有user了，render_template()可以不传入而直接使用了
+def inject_user_data():
+    return dict(user=User.query.first())      # 需要返回字典，等同于 return {'user': user}
 
 
 # 数据库 设置表 ORM技术

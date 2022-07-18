@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ user.name }}'s Watchlist</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
+</head>
+<body>
+    <h2>
+        <img alt="Avatar" class="avatar" src="{{ url_for('static', filename='images/tom.jpg') }}">
+        {{ user.name }}'s Watchlist
+    </h2>
+    <ul class="movie-list">
+        <li>
+            Page Not Found - 404
+            <span class="float-right">
+                <!--    报错，可能是没有定义index路由
+                {#
+                <a href="{{ url_for('index') }}">Go Back</a>
+                #}
+                然而jinja2注释是不看javascript的，因此就算用了javascript的注释语法，jinja2还是会匹配到这个url_for
+                正确的做法是用jinja2的注释语法
+                -->
+                <a href="/">Go Back</a>
+            </span>
+        </li>
+    </ul>
+    <footer>
+        <small>&copy; 2018 <a href="http://helloflask.com/book/3">HelloFlask</a></small>
+	</footer>
+</body>
+</html>
