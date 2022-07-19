@@ -2,23 +2,26 @@
 
 
 {% block content %}
-{% for cmt in comments %}
-<li>{{ cmt.user_comment }}</li>
-{% if current_user.is_authenticated %}
-<!-- <a class="btn" href="/board/deleteComment/{{ cmt.id }}">delete</a> -->
-<span class="float-right">
-    <form class="inline-form" method="post" action="/board/deleteComment/{{ cmt.id }}">
-        <input class="btn" type="submit" name="delete" value="Delete">
-    </form>
-</span>
-{% endif %}
-{% endfor %}
+<ul class="comment-list">
+    {% for cmt in comments %}
+        <li>
+            {{ cmt.user_comment }}
+            {% if current_user.is_authenticated %}
+                {% if cmt.belongs_to==current_user.username or current_user.username=='admin' %}
+                <!-- <a class="btn" href="/board/deleteComment/{{ cmt.id }}">delete</a> -->
+                <span class="float-right">
+                    <form class="inline-form" method="post" action="/board/deleteComment/{{ cmt.id }}">
+                        <input class="btn" type="submit" name="delete" value="Delete">
+                    </form>
+                </span>
+                {% endif %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}
 
-<!--
-删除自己留言的按钮
-实现两个吧，一个是board处的，另外一个是是settings
--->
+
 {% block table %}
 {% if current_user.is_authenticated %}
 <form method="post">

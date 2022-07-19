@@ -102,7 +102,7 @@ def page_not_found(e):
 
 @mainApp.context_processor  # 以后模板上下文有user了，render_template()可以不传入而直接使用了
 def inject_data():
-    return dict(user=current_user, message=get_flashed_messages())  # 需要返回字典，等同于 return {'user': user}
+    return dict(user=current_user, message=get_flashed_messages())  # 需要返回字典，等同于 return {'user': user} 好像all_comments=Comment也能传
 
 
 @mainApp.route('/login', methods=['GET', 'POST'])
@@ -149,7 +149,7 @@ def settings():
         flash('Settings updated')
         return redirect('/')
     else:
-        return render_template('settings.html')
+        return render_template('settings.html', comments=Comment.query.all())
 
 
 @mainApp.route('/register', methods=['GET', 'POST'])
@@ -191,8 +191,9 @@ def board():
 def deleteComment(cmt_id):
     db.session.delete(Comment.query.get_or_404(cmt_id))
     db.session.commit()
+    # flash('Comment deleted.' + request.headers.get('Referer'))
     flash('Comment deleted.')
-    return redirect(url_for('board'))
+    return redirect(url_for(request.headers.get('Referer')[22:]))
 
 
 # 数据库 设置表 ORM技术

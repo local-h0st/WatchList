@@ -9,3 +9,23 @@
     </form>
 </div>
 {% endblock %}
+
+
+{% block table %}
+<h5>All your comments:</h5>
+<ul class="comment-list">
+    <!-- if current_user.is_authenticated不需要，因为/settings有视图保护 -->
+    {% for cmt in comments %}
+        {% if cmt.belongs_to==current_user.username %}
+            <li>
+                {{ cmt.user_comment }}
+                <span class="float-right">
+                    <form class="inline-form" method="post" action="/board/deleteComment/{{ cmt.id }}">
+                        <input class="btn" type="submit" name="delete" value="Delete">
+                    </form>
+                </span>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endblock %}
