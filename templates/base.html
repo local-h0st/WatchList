@@ -46,7 +46,7 @@
             <!-- 新增导航栏 -->
             <li><a href="/">Home</a></li>
             <li><a href="/me">Me</a></li>
-
+            <li><a href="/board">Board</a></li>
             {% if current_user.is_authenticated %}
             <li><a href="{{ url_for('settings') }}">Settings</a></li>
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
@@ -58,10 +58,8 @@
         </ul>
     </nav>
 
-    {% block content %} {# 模板继承时用的block块 #}
-    <div data-gb-custom-block data-tag="block">
 
-    </div>
+    {% block content %} {# 模板继承时用的block块 #}
     {% endblock %}
 
 

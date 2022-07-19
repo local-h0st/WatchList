@@ -50,8 +50,9 @@ def index():
     else:  # GET
         # return render_template('origin_index.html', user=User.query.first(), movies=Movie.query.all())
         if current_user.is_authenticated:
-            return render_template('index.html', movies=Movie.query.filter(Movie.belongs_to == current_user.username).all())
-        else:   # 未登录仅展示admin的watch list
+            return render_template('index.html',
+                                   movies=Movie.query.filter(Movie.belongs_to == current_user.username).all())
+        else:  # 未登录仅展示admin的watch list
             return render_template('index.html', movies=Movie.query.filter(Movie.belongs_to == 'admin').all())
 
 
@@ -156,10 +157,10 @@ def register():
     if request.method == 'POST':
         new_username = request.form['username']
         new_password = request.form['password']
-        if not new_username or not new_password:    # 空
+        if not new_username or not new_password:  # 空
             flash('Invalid username or password.')
             return redirect(url_for('register'))
-        if User.query.filter(User.username == new_username).count():     # 重名
+        if User.query.filter(User.username == new_username).count():  # 重名
             flash('Username occupied.')
             return redirect(url_for('register'))
         new_user = User('Default name')
@@ -172,6 +173,26 @@ def register():
         return redirect(url_for('login'))
     else:
         return render_template('register.html')
+
+
+@mainApp.route('/board', methods=['GET', 'POST'])
+def board():
+    if request.method == 'POST':
+        db.session.add(Comment(current_user.username, request.form['comment']))
+        db.session.commit()
+        flash('Comment success.')
+        return redirect(url_for('board'))
+    else:
+        return render_template('board.html', comments=Comment.query.all())
+
+
+@mainApp.route('/board/deleteComment/<int:cmt_id>', methods=['POST'])
+@login_required
+def deleteComment(cmt_id):
+    db.session.delete(Comment.query.get_or_404(cmt_id))
+    db.session.commit()
+    flash('Comment deleted.')
+    return redirect(url_for('board'))
 
 
 # 数据库 设置表 ORM技术
@@ -202,12 +223,22 @@ class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # 主键
     title = db.Column(db.String(60))
     year = db.Column(db.String(4))
-    belongs_to = db.Column(db.String(20))   # using username
+    belongs_to = db.Column(db.String(20))  # using username
 
     def __init__(self, title, year, belongs_to):
         self.title = title
         self.year = year
         self.belongs_to = belongs_to
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    belongs_to = db.Column(db.String(20))  # using username
+    user_comment = db.Column(db.String(128))
+
+    def __init__(self, belongs_to, cmt):
+        self.belongs_to = belongs_to
+        self.user_comment = cmt
 
 
 if __name__ == '__main__':
@@ -232,6 +263,7 @@ if __name__ == '__main__':
     db.session.add(me)  # db.session.add() 调用是将改动添加进数据库会话（一个临时区域）中。
     for record in watch_list:
         db.session.add(Movie(title=record['title'], year=record['year'], belongs_to='admin'))
+    db.session.add(Comment('admin', 'Hello this is the first comment, welcome to my website!'))
     db.session.commit()  # commit() 很重要，只有调用了这一行才会真正把记录提交进数据库
     print('Done.')
 
