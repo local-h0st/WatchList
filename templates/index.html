@@ -10,6 +10,8 @@
         <div data-gb-custom-block data-tag="for">
             {% for movie in movies %}
                 <li>{{ movie['title'] }} - {{ movie.year }}
+
+                    {% if current_user.is_authenticated %}
                     <span class="float-right">
                         <a class="btn" href="{{ url_for('edit', movie_id=movie.id) }}">Edit</a>
                     </span>
@@ -18,6 +20,8 @@
                             <input class="btn" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure?')">
                         </form>
                     </span>
+                    {% endif %}
+
                     <span class="float-right">
                         <a class="imdb" href="https://www.imdb.com/find?q={{ movie.title }}" target="_blank" title="Find this movie on IMDb">IMDb</a>
                     </span>
@@ -34,9 +38,11 @@
 
 
 {% block table %}
+{% if current_user.is_authenticated %}
 <form method="post">
     Movie <input type="text" name="title" autocomplete="off" required>
     Year <input type="text" name="year" autocomplete="off" required>
     <input class="btn" type="submit" name="submit" value="Add it!">
 </form>
+{% endif %}
 {% endblock %}

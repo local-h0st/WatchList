@@ -16,7 +16,12 @@
         <meta charset="utf-8">
         <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
+        <!-- 未登录仅展示admin的watch list -->
+        {% if current_user.is_authenticated %}
         <title>{{ user.name }}'s Watchlist</title>
+        {% else %}
+        <title>localh0st's Watchlist</title>
+        {% endif %}
     </div>
 </head>
 <body>
@@ -29,13 +34,27 @@
 
     <h1 id="top-head">
         <img src="{{ url_for('static', filename='images/tom.jpg') }}" alt="Avatar" width="80" height="80">
+        <!-- 未登录仅展示admin的watch list -->
+        {% if current_user.is_authenticated %}
         {{ user.name }}'s Watchlist
+        {% else %}
+        localh0st's Watchlist
+        {% endif %}
     </h1>
     <nav>
         <ul>
             <!-- 新增导航栏 -->
             <li><a href="/">Home</a></li>
             <li><a href="/me">Me</a></li>
+
+            {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('settings') }}">Settings</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+
         </ul>
     </nav>
 
